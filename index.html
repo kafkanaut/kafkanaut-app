@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kafkanaut — The free Kafka client that can't break prod</title>
+  <meta name="description" content="Kafkanaut is a free desktop Kafka client that reads with assign() only, so browsing and tailing can't disturb your production consumers. No account, no telemetry, secrets in your OS keychain.">
+  <link rel="icon" href="assets/kafkanaut-icon.png">
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kafkanaut — The free Kafka client that can't break prod">
+  <meta property="og:description" content="Free desktop Kafka client. Reads with assign() only — no consumer group, no committed offsets. No account, no telemetry, secrets in your OS keychain.">
+  <meta property="og:image" content="assets/screenshot-live-tail.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="assets/fonts.css">
+  <style>
+    /* ─── Reset ─── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ─── Theme tokens (cyan accent — the new UI direction) ─── */
+    :root {
+      --bg:            #0b0c0e;
+      --panel:         #101318;
+      --text:          #e6eaef;
+      --muted:         #8b93a0;
+      --hairline:      rgba(255,255,255,0.06);
+
+      --accent:        #22d3ee;
+      --accent-bright: #7fe4f2;
+      --accent-soft:   rgba(34,211,238,0.08);
+      --accent-faint:  rgba(34,211,238,0.04);
+      --accent-border: rgba(34,211,238,0.3);
+      --accent-glow:   rgba(34,211,238,0.12);
+      --accent-ink:    #04262b;
+
+      --font-sans:    'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-display: 'Space Grotesk', var(--font-sans);
+      --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: var(--accent-bright); }
+    code { font-family: var(--font-mono); }
+
+    details > summary { cursor: pointer; list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+
+    /* Scroll-reveal initial state (JS clears it; no-JS shows content) */
+    [data-reveal] { opacity: 1; }
+    .reveal-armed { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-in { opacity: 1 !important; transform: translateY(0) !important; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+      .reveal-armed { opacity: 1; transform: none; }
+    }
+
+    /* ─── Nav ─── */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      padding: 18px clamp(20px, 4vw, 48px);
+      border-bottom: 1px solid var(--hairline);
+      background: rgba(11,12,14,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 11px; }
+    .nav-brand img { width: 30px; height: 30px; border-radius: 7px; }
+    .brand-name { font-family: var(--font-mono); font-weight: 600; font-size: 16px; color: #eef1f5; }
+    .brand-badge {
+      font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+      border: 1px solid var(--accent-border); padding: 2px 8px; border-radius: 5px;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: clamp(14px, 2.5vw, 28px);
+      font-family: var(--font-mono); font-size: 13.5px; color: var(--muted);
+    }
+    .nav-cta {
+      display: flex; align-items: center; gap: 8px;
+      color: #0b0c0e; background: var(--accent); font-weight: 600;
+      padding: 7px 14px; border-radius: 7px;
+    }
+    .nav-cta:hover { color: #0b0c0e; transform: translateY(-1px); }
+
+    /* ─── Layout helpers ─── */
+    .eyebrow { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.08em; }
+    .section { max-width: 1160px; margin: 0 auto; padding: clamp(72px, 9vw, 120px) clamp(20px, 4vw, 48px); }
+    .section-title {
+      font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em;
+      color: #f2f4f8; margin-top: 16px;
+    }
+    .code-accent {
+      font-family: var(--font-mono); font-size: 15.5px; color: var(--accent-bright);
+      background: var(--accent-soft); padding: 2px 7px; border-radius: 5px;
+    }
+    .code-mono { font-family: var(--font-mono); font-size: 13.5px; }
+
+    /* ─── Hero ─── */
+    .hero { position: relative; }
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    .hero-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 50% 60% at 85% 40%, var(--accent-glow), transparent 70%);
+    }
+    .hero-inner {
+      position: relative; display: flex; flex-wrap: wrap; gap: 56px; align-items: center;
+      padding: clamp(56px, 8vw, 96px) 0 clamp(56px, 8vw, 96px) clamp(20px, 4vw, 48px);
+    }
+    .hero-copy {
+      flex: 1 1 480px; min-width: min(480px, 100%); max-width: 620px;
+      display: flex; flex-direction: column; align-items: flex-start;
+    }
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(40px, 5vw, 62px); font-weight: 700;
+      letter-spacing: -0.03em; line-height: 1.06; color: #f2f4f8; margin-top: 20px;
+    }
+    .hero-lead { font-size: 18px; line-height: 1.65; color: #98a0ac; margin-top: 22px; }
+    .filter-snippet {
+      font-family: var(--font-mono); font-size: 14px; color: #7ee3a1;
+      background: var(--panel); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px;
+      padding: 14px 18px; margin-top: 26px; max-width: 100%; overflow-x: auto; white-space: nowrap;
+    }
+    .filter-snippet .prompt { color: #5b6472; }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .hero-meta { font-family: var(--font-mono); font-size: 13px; color: #626b78; margin-top: 16px; }
+    .hero-shot { flex: 1 1 600px; min-width: min(600px, 100%); }
+    .hero-frame {
+      border: 1px solid rgba(255,255,255,0.08); border-right: none;
+      border-radius: 12px 0 0 12px; overflow: hidden; aspect-ratio: 16 / 10;
+      box-shadow: -18px 24px 70px rgba(0,0,0,0.55), 0 0 60px var(--accent-glow);
+    }
+    .hero-frame img, .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex; align-items: center; font-size: 15.5px;
+      padding: 13px 24px; border-radius: 9px; border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+    .btn-primary:hover { color: var(--accent-ink); transform: translateY(-2px); box-shadow: 0 8px 28px var(--accent-glow); }
+    .btn-secondary { background: transparent; border-color: rgba(255,255,255,0.16); color: var(--text); font-weight: 500; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-2px); color: #fff; }
+
+    /* ─── Stat strip ─── */
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
+      font-family: var(--font-mono);
+    }
+    .stat { padding: 22px clamp(20px, 4vw, 48px); border-right: 1px solid var(--hairline); }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-size: 18px; font-weight: 600; color: #f2f4f8; }
+    .stat-num.accent { color: var(--accent); }
+    .stat-label { font-size: 13px; color: #6b7280; }
+
+    /* ─── Safety cards ─── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 44px; }
+    .card {
+      background: var(--panel); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 28px;
+      transition: border-color .25s ease, transform .25s ease;
+    }
+    .card:hover { border-color: var(--accent-border); transform: translateY(-3px); }
+    .chip {
+      display: inline-block; font-family: var(--font-mono); font-size: 14px;
+      color: var(--accent-bright); background: var(--accent-soft); padding: 4px 10px; border-radius: 6px;
+    }
+    .card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: #eef1f5; margin-top: 18px; }
+    .card p { font-size: 15px; line-height: 1.65; color: var(--muted); margin-top: 10px; }
+
+    /* ─── Features ─── */
+    .features {
+      border-top: 1px solid var(--hairline); max-width: 1160px; margin: 0 auto;
+      padding: clamp(72px, 9vw, 120px) clamp(20px, 4vw, 48px) 0;
+      display: flex; flex-direction: column; gap: clamp(80px, 10vw, 130px);
+    }
+    .feature { display: flex; flex-wrap: wrap; gap: clamp(32px, 5vw, 72px); align-items: center; }
+    .feature.reverse { flex-wrap: wrap-reverse; }
+    .feature.last { padding-bottom: clamp(72px, 9vw, 120px); }
+    .feature-copy { flex: 1 1 380px; min-width: min(380px, 100%); }
+    .feature-copy h2 {
+      font-family: var(--font-display); font-size: clamp(26px, 2.8vw, 34px); font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1.15; color: #f2f4f8; margin-top: 14px;
+    }
+    .feature-copy p { font-size: 16px; line-height: 1.7; color: var(--muted); margin-top: 16px; }
+    .feature-list {
+      list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 10px;
+      font-size: 15px; color: #a8b0bc;
+    }
+    .feature-list li { display: flex; gap: 10px; }
+    .feature-list .bullet { color: var(--accent); }
+    .shot { flex: 1 1 480px; min-width: min(480px, 100%); }
+    .shot-frame { border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; aspect-ratio: 16 / 10; }
+    .shot-placeholder {
+      border: 1px dashed rgba(255,255,255,0.16); border-radius: 12px; aspect-ratio: 16 / 10;
+      display: flex; align-items: center; justify-content: center;
+      background: repeating-linear-gradient(-45deg, #101318, #101318 14px, #12151b 14px, #12151b 28px);
+    }
+    .slot-label { font-family: var(--font-mono); font-size: 13px; color: #5d6570; text-align: center; padding: 0 12px; }
+
+    /* ─── Comparison ─── */
+    .table-wrap { margin-top: 40px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+    table.compare { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 760px; }
+    table.compare thead tr { background: var(--panel); }
+    table.compare th { text-align: left; padding: 16px 20px; }
+    table.compare th.col-blank { color: #6b7280; font-family: var(--font-mono); font-size: 12.5px; font-weight: 500; letter-spacing: 0.05em; }
+    table.compare th.col-kafkanaut { color: var(--accent); font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+    table.compare th.col-competitor { color: #b8bfc9; font-weight: 500; }
+    table.compare tbody tr { border-top: 1px solid var(--hairline); }
+    table.compare td { padding: 14px 20px; }
+    table.compare td.cell-label { color: #98a0ac; font-weight: 500; }
+    table.compare td.cell-kafkanaut { color: var(--accent-bright); font-weight: 500; background: var(--accent-faint); }
+    table.compare td.cell-competitor { color: var(--muted); }
+
+    /* ─── Download ─── */
+    .download { border-top: 1px solid var(--hairline); position: relative; }
+    .download-glow {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 70% at 50% 110%, var(--accent-glow), transparent 70%);
+    }
+    .download-inner {
+      position: relative; max-width: 860px; margin: 0 auto;
+      padding: clamp(72px, 9vw, 120px) clamp(20px, 4vw, 48px);
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    .download-inner .app-icon { width: 64px; height: 64px; border-radius: 14px; }
+    .download-title { font-size: clamp(30px, 3.4vw, 44px); margin-top: 26px; }
+    .download-sub { font-size: 16px; color: var(--muted); margin-top: 12px; }
+    .download-buttons {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; width: 100%; margin-top: 40px;
+    }
+    .dl-card {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      border-radius: 12px; padding: 24px; border: 1px solid transparent;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .dl-card.primary { background: var(--accent); color: var(--accent-ink); }
+    .dl-card.primary:hover { color: var(--accent-ink); transform: translateY(-3px); box-shadow: 0 12px 40px var(--accent-glow); }
+    .dl-card.secondary { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.14); color: #eef1f5; }
+    .dl-card.secondary:hover { border-color: rgba(255,255,255,0.35); transform: translateY(-3px); color: #fff; }
+    .dl-title { font-weight: 600; font-size: 17px; }
+    .dl-meta { font-family: var(--font-mono); font-size: 12.5px; }
+    .dl-card.primary .dl-meta { opacity: 0.75; }
+    .dl-card.secondary .dl-meta { opacity: 0.6; }
+    .download-latest { font-family: var(--font-mono); font-size: 13px; color: #626b78; margin-top: 14px; }
+    .notes {
+      margin-top: 28px; width: 100%; max-width: 640px; text-align: left;
+      background: var(--panel); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+    }
+    .notes summary { padding: 16px 20px; font-size: 14.5px; color: #a8b0bc; display: flex; align-items: center; gap: 10px; }
+    .notes summary .info { color: var(--accent); }
+    .notes-body { padding: 0 20px 18px; font-size: 14px; line-height: 1.7; color: var(--muted); display: flex; flex-direction: column; gap: 10px; }
+    .notes-body strong { color: #c4c9d2; }
+    .notes-body .planned { color: #626b78; }
+
+    /* ─── FAQ ─── */
+    .faq { max-width: 760px; }
+    .faq-list { display: flex; flex-direction: column; gap: 12px; margin-top: 36px; }
+    details.faq-item { background: var(--panel); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; }
+    details.faq-item summary { padding: 18px 22px; font-size: 16px; font-weight: 500; color: var(--text); }
+    details.faq-item p { padding: 0 22px 18px; font-size: 15px; line-height: 1.7; color: var(--muted); }
+
+    /* ─── Footer ─── */
+    .footer {
+      border-top: 1px solid var(--hairline); padding: 32px clamp(20px, 4vw, 48px);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 10px; }
+    .footer-brand img { width: 24px; height: 24px; border-radius: 6px; }
+    .footer-brand span { font-family: var(--font-mono); font-size: 13.5px; color: var(--muted); }
+    .footer-meta { display: flex; align-items: center; gap: 24px; font-family: var(--font-mono); font-size: 13px; color: #626b78; }
+    .footer-meta a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAV ═══ -->
+  <header class="nav">
+    <a class="nav-brand" href="#top" aria-label="Kafkanaut home">
+      <img src="assets/kafkanaut-icon.png" alt="Kafkanaut">
+      <span class="brand-name">kafkanaut</span>
+      <span class="brand-badge">v0.48.0</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">/features</a>
+      <a href="#safety">/safety</a>
+      <a href="#compare">/compare</a>
+      <a href="#faq">/faq</a>
+      <a class="nav-cta" href="#download">↓ Download</a>
+    </nav>
+  </header>
+
+  <!-- ═══ HERO ═══ -->
+  <section id="top" class="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow">// FREE · NO ACCOUNT · NO TELEMETRY</div>
+        <h1 class="hero-title">The Kafka client that can't break prod.</h1>
+        <p class="hero-lead">Kafkanaut reads with <code class="code-accent">assign()</code> only — browsing and tailing never joins a consumer group and never commits offsets, so your production consumers' lag and committed offsets stay untouched. Tail 100k+ messages live, decode Avro, replay across clusters. Secrets stay in your OS keychain.</p>
+        <div class="filter-snippet"><span class="prompt">$ filter&gt;</span> value.amount &gt; 100 &amp;&amp; headers.eventType === 'CREATED'</div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">⌘&ensp;Download for macOS</a>
+          <a class="btn btn-secondary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">⊞&ensp;Download for Windows</a>
+        </div>
+        <div class="hero-meta">v0.48.0 · ~15 MB · free — no account, no telemetry</div>
+      </div>
+      <div class="hero-shot" data-reveal>
+        <div class="hero-frame">
+          <img src="assets/screenshot-live-tail.png" alt="Kafkanaut live tail — merged topic stream with a developer filter expression" width="1600" height="1000" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STAT STRIP ═══ -->
+  <div class="stats">
+    <div class="stat"><span class="stat-num">40+</span><span class="stat-label">&ensp;features</span></div>
+    <div class="stat"><span class="stat-num">570+</span><span class="stat-label">&ensp;automated tests</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">&ensp;telemetry</span></div>
+    <div class="stat"><span class="stat-num accent">$0</span><span class="stat-label">&ensp;free</span></div>
+  </div>
+
+  <!-- ═══ SAFETY ═══ -->
+  <section id="safety" class="section">
+    <div data-reveal style="max-width: 680px;">
+      <div class="eyebrow">// READ-SAFE BY DESIGN</div>
+      <h2 class="section-title" style="font-size: clamp(30px, 3.4vw, 42px); line-height: 1.12;">Point it at production. Your consumers won't notice.</h2>
+    </div>
+    <div class="cards">
+      <div class="card" data-reveal>
+        <div class="chip">reads: assign() only</div>
+        <h3>Reading can't disturb consumers</h3>
+        <p>Browsing and tailing use partition assignment, never <code class="code-mono">subscribe()</code>. Kafkanaut never joins a consumer group and never commits offsets when reading — no rebalances triggered, your consumers' lag and committed positions stay exactly as they were.</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="chip">OS keychain</div>
+        <h3>Secrets never leave your machine</h3>
+        <p>SASL passwords, mTLS certs and OAuth tokens live in macOS Keychain / Windows Credential Manager — never in plaintext config files, never sent anywhere. No telemetry, no phone-home, no account.</p>
+      </div>
+      <div class="card" data-reveal>
+        <div class="chip">admin: deliberate only</div>
+        <h3>Writes are explicit operator actions</h3>
+        <p>Full cluster admin is there when you need it — reset offsets, create and delete topics, delete records. But nothing happens silently: destructive actions require typing the resource name to confirm. Fat fingers can't drop <code class="code-mono">payments.tx.created</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section id="features" class="features">
+
+    <!-- Live tail -->
+    <div class="feature" data-reveal>
+      <div class="feature-copy">
+        <div class="eyebrow">// BROWSE &amp; TAIL</div>
+        <h2>Tail every topic at once. Filter like a developer.</h2>
+        <p>Merge multiple topics into one live stream across parallel tabs, with virtualized scroll that stays smooth past 100k messages. Start from oldest, latest N, a specific offset, a timestamp, or a date range.</p>
+        <ul class="feature-list">
+          <li><span class="bullet">▸</span><span>JavaScript filter expressions in a Monaco editor, or SQL <code class="code-mono">WHERE</code> syntax</span></li>
+          <li><span class="bullet">▸</span><span>⌘F full-buffer search, header filter chips, saved filters, tab pinning</span></li>
+          <li><span class="bullet">▸</span><span>Consumer-lag visibility while reading — without ever joining the group</span></li>
+        </ul>
+      </div>
+      <div class="shot">
+        <!-- Placeholder: dedicated browse & tail screenshot not provided yet (16:10). Drop assets/screenshot-tail.png here. -->
+        <div class="shot-placeholder">
+          <span class="slot-label">screenshot slot · browse &amp; tail (16:10) · assets/screenshot-tail.png</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspect (reversed) -->
+    <div class="feature reverse" data-reveal>
+      <div class="shot">
+        <!-- Placeholder: inspect / detail-pane screenshot not provided yet (16:10). Drop assets/screenshot-inspect.png here. -->
+        <div class="shot-placeholder">
+          <span class="slot-label">screenshot slot · inspect / detail pane (16:10) · assets/screenshot-inspect.png</span>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <div class="eyebrow">// INSPECT</div>
+        <h2>Every byte, decoded — JSON tree to hex.</h2>
+        <p>Schema Registry auto-decode handles Avro, Protobuf and JSON Schema in Confluent wire format. Flip between JSON tree, raw, hex and headers on any message.</p>
+        <ul class="feature-list">
+          <li><span class="bullet">▸</span><span>Text diff with the previous message, plus AI semantic diff in plain English</span></li>
+          <li><span class="bullet">▸</span><span>PII masking at the display layer — <code class="code-mono">*card*</code>, <code class="code-mono">iban</code>, <code class="code-mono">email</code> patterns</span></li>
+          <li><span class="bullet">▸</span><span>Copy as cURL, export to JSON / NDJSON / CSV</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Produce & replay -->
+    <div class="feature" data-reveal>
+      <div class="feature-copy">
+        <div class="eyebrow">// PRODUCE &amp; REPLAY</div>
+        <h2>Produce anything. Replay across clusters.</h2>
+        <p>Single messages with a Monaco JSON editor, headers, explicit partition — and true tombstones with NULL payloads. Bulk produce from file with dry-run and throttle.</p>
+        <ul class="feature-list">
+          <li><span class="bullet">▸</span><span>Cross-environment replay — capture in one cluster, replay into another, tombstone-faithful</span></li>
+          <li><span class="bullet">▸</span><span>Schema-Registry-aware encoding (Avro / JSON Schema wire format)</span></li>
+          <li><span class="bullet">▸</span><span>✨ AI template generator — realistic example messages for any topic</span></li>
+        </ul>
+      </div>
+      <div class="shot">
+        <div class="shot-frame">
+          <img src="assets/screenshot-produce.png" alt="Kafkanaut produce dialog — JSON editor with headers and explicit partition" width="1600" height="1000" loading="lazy">
+        </div>
+      </div>
+    </div>
+
+    <!-- Cluster admin (reversed) -->
+    <div class="feature reverse" data-reveal>
+      <div class="shot">
+        <div class="shot-frame">
+          <img src="assets/screenshot-cluster.png" alt="Kafkanaut cluster admin — brokers, topics, consumer groups and lag" width="1600" height="1000" loading="lazy">
+        </div>
+      </div>
+      <div class="feature-copy">
+        <div class="eyebrow">// CLUSTER ADMIN</div>
+        <h2>The whole cluster, one workspace.</h2>
+        <p>Brokers, topics, consumer groups, Schema Registry, Kafka Connect, ksqlDB, ACLs and JMX metrics — administered from the same app you tail with. Every change is a deliberate, confirmed action.</p>
+        <ul class="feature-list">
+          <li><span class="bullet">▸</span><span>Consumer groups: lag tables, lag history graph, reset offsets (with confirmation)</span></li>
+          <li><span class="bullet">▸</span><span>Topics: create, alter configs, add partitions, delete records</span></li>
+          <li><span class="bullet">▸</span><span>Schema Registry subject/version admin with compatibility management</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- AI extension -->
+    <div class="feature last" data-reveal>
+      <div class="feature-copy">
+        <div class="eyebrow">// AI EXTENSION — OPT-IN</div>
+        <h2>Ask for a filter in English. Get one in JavaScript.</h2>
+        <p>The AI extension no commercial competitor ships — and it's off by default. Natural language compiles to filter expressions; topics get summarized; the in-app manual answers questions over its own docs.</p>
+        <ul class="feature-list">
+          <li><span class="bullet">▸</span><span>Multi-provider: Azure AI Foundry, OpenAI, Anthropic, or Ollama — fully local</span></li>
+          <li><span class="bullet">▸</span><span>Audit log stores metadata only — never message payloads</span></li>
+          <li><span class="bullet">▸</span><span>Disable it entirely and nothing AI-related ever runs</span></li>
+        </ul>
+      </div>
+      <div class="shot">
+        <div class="shot-frame">
+          <img src="assets/screenshot-ai-filter.png" alt="Kafkanaut AI filter — natural language compiled to a JavaScript filter expression" width="1600" height="1000" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ COMPARISON ═══ -->
+  <section id="compare" class="section" style="border-top: 1px solid var(--hairline);">
+    <div data-reveal>
+      <div class="eyebrow">// HONEST COMPARISON</div>
+      <h2 class="section-title" style="font-size: clamp(30px, 3.4vw, 42px);">How it stacks up</h2>
+    </div>
+    <div class="table-wrap" data-reveal>
+      <table class="compare">
+        <thead>
+          <tr>
+            <th class="col-blank"></th>
+            <th class="col-kafkanaut">Kafkanaut</th>
+            <th class="col-competitor">Kadeck</th>
+            <th class="col-competitor">Conduktor</th>
+            <th class="col-competitor">Offset Explorer</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cell-label">Price</td>
+            <td class="cell-kafkanaut">Free</td>
+            <td class="cell-competitor">Free tier + paid</td>
+            <td class="cell-competitor">Paid (free trial)</td>
+            <td class="cell-competitor">Free eval, paid license</td>
+          </tr>
+          <tr>
+            <td class="cell-label">AI features</td>
+            <td class="cell-kafkanaut">✓ opt-in, multi-provider</td>
+            <td class="cell-competitor">✗</td>
+            <td class="cell-competitor">✗</td>
+            <td class="cell-competitor">✗</td>
+          </tr>
+          <tr>
+            <td class="cell-label">Read-safety (assign-only)</td>
+            <td class="cell-kafkanaut">✓ by design</td>
+            <td class="cell-competitor">✗</td>
+            <td class="cell-competitor">✗</td>
+            <td class="cell-competitor">✗</td>
+          </tr>
+          <tr>
+            <td class="cell-label">Native desktop</td>
+            <td class="cell-kafkanaut">✓ Tauri, ~15 MB</td>
+            <td class="cell-competitor">Electron</td>
+            <td class="cell-competitor">Web console</td>
+            <td class="cell-competitor">Java desktop</td>
+          </tr>
+          <tr>
+            <td class="cell-label">Schema Registry admin</td>
+            <td class="cell-kafkanaut">✓ free</td>
+            <td class="cell-competitor">paid tier</td>
+            <td class="cell-competitor">paid tier</td>
+            <td class="cell-competitor">view only</td>
+          </tr>
+          <tr>
+            <td class="cell-label">Connect / ksqlDB</td>
+            <td class="cell-kafkanaut">✓ free</td>
+            <td class="cell-competitor">paid tier</td>
+            <td class="cell-competitor">paid tier</td>
+            <td class="cell-competitor">✗</td>
+          </tr>
+          <tr>
+            <td class="cell-label">No account / no telemetry</td>
+            <td class="cell-kafkanaut">✓</td>
+            <td class="cell-competitor">account required</td>
+            <td class="cell-competitor">account required</td>
+            <td class="cell-competitor">✓</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ DOWNLOAD ═══ -->
+  <section id="download" class="download">
+    <div class="download-glow" aria-hidden="true"></div>
+    <div class="download-inner">
+      <img class="app-icon" src="assets/kafkanaut-icon.png" alt="">
+      <h2 class="section-title download-title" data-reveal>Get Kafkanaut</h2>
+      <p class="download-sub">Free. No account, no telemetry, no strings.</p>
+      <div class="download-buttons">
+        <a class="dl-card primary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">
+          <span class="dl-title">⌘&ensp;Download for macOS</span>
+          <span class="dl-meta">macOS 12+ · Apple Silicon &amp; Intel · ~15 MB</span>
+        </a>
+        <a class="dl-card secondary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">
+          <span class="dl-title">⊞&ensp;Download for Windows</span>
+          <span class="dl-meta">Windows 10+ · x64 · ~15 MB</span>
+        </a>
+      </div>
+      <div class="download-latest">Latest release: v0.48.0</div>
+      <details class="notes">
+        <summary><span class="info">ⓘ</span> Builds are not yet code-signed — how to open them</summary>
+        <div class="notes-body">
+          <div><strong>macOS:</strong> right-click the app → <em>Open</em> → <em>Open</em> again. Needed once; Gatekeeper remembers.</div>
+          <div><strong>Windows:</strong> if SmartScreen appears, click <em>More info</em> → <em>Run anyway</em>.</div>
+          <div class="planned">Code signing and notarization are planned.</div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ═══ FAQ ═══ -->
+  <section id="faq" class="section faq">
+    <div data-reveal>
+      <div class="eyebrow">// FAQ</div>
+      <h2 class="section-title" style="font-size: clamp(28px, 3vw, 38px);">Questions ops people actually ask</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" data-reveal>
+        <summary>Is it really free?</summary>
+        <p>Yes. Free to download and use — no tiers, no seat pricing, no account, no "community edition" with the good parts removed.</p>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary>Does it send my data anywhere?</summary>
+        <p>No. Zero telemetry, no account, no phone-home. Credentials stay in your OS keychain. The AI extension is opt-in, and you can point it at a local Ollama instance so nothing ever leaves your machine — its audit log stores metadata only, never payloads.</p>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary>Can it break production?</summary>
+        <p>Reading can't — Kafkanaut reads with <code class="code-mono">assign()</code> only, never joins a consumer group, never commits offsets. Admin operations (reset offsets, delete topics, delete records) do exist — that's the point of a client — but they're explicit actions, and destructive ones require typed confirmation.</p>
+      </details>
+      <details class="faq-item" data-reveal>
+        <summary>Linux?</summary>
+        <p>macOS and Windows today. A Linux build is on the roadmap.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <img src="assets/kafkanaut-icon.png" alt="">
+      <span>kafkanaut · free desktop Kafka client</span>
+    </div>
+    <div class="footer-meta">
+      <a href="mailto:michal.svondr@gmail.com">michal.svondr@gmail.com</a>
+      <span>© 2026 Kafkanaut</span>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll-reveal — mirrors the design's IntersectionObserver behaviour.
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var els = document.querySelectorAll('[data-reveal]');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('reveal-in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) {
+        // Elements already in view on load stay visible (never armed).
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.9) return;
+        el.classList.add('reveal-armed');
+        io.observe(el);
+      });
+    })();
+  </script>
+
+</body>
+</html>
