@@ -10,7 +10,7 @@ contains **no application source** — that lives privately elsewhere (see below
 - **`index.html`** — the landing page (self-contained static: local `assets/`
   fonts + screenshots, no external CDNs, `.nojekyll` so Pages serves it raw).
 - **`assets/`** — screenshots, `kafkanaut-icon.png`, `fonts.css` + `fonts/`.
-- **Live site:** https://smike4658.github.io/kafkanaut-app/ (Pages, main/root,
+- **Live site:** https://kafkanaut.github.io/kafkanaut-app/ (Pages, main/root,
   HTTPS). Edit `index.html`/`assets`, commit, **push → Pages auto-rebuilds**.
 - **Downloads:** GitHub Releases of this repo. Buttons on the page point at
   `.../releases/latest`. Current release **v0.48.0** = macOS
