@@ -150,6 +150,18 @@
     }
     .hero-frame img, .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
+    /* Ultra-wide: cap the hero so the screenshot stops growing; the frame
+       detaches from the right edge, so give it back its full border. */
+    @media (min-width: 1560px) {
+      .hero-inner { max-width: 1460px; margin: 0 auto; padding-right: 48px; }
+      .hero-shot { max-width: 780px; }
+      .hero-frame {
+        border-right: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        box-shadow: 0 24px 70px rgba(0,0,0,0.55), 0 0 60px var(--accent-glow);
+      }
+    }
+
     /* ─── Buttons ─── */
     .btn {
       display: inline-flex; align-items: center; font-size: 15.5px;
