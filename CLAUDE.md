@@ -45,20 +45,25 @@ features.** Verify against the app's actual behavior:
   `../kafkanaut/src-tauri/src/secrets_store.rs`). AI is opt-in and can run
   fully local (Ollama).
 - **Contact:** `michal.svondr@gmail.com`. No company / Teams / "WAG".
-- **Download buttons link the versioned asset directly**
-  (`releases/download/vX.Y.Z/Kafkanaut_X.Y.Z_aarch64.dmg`) so one click
-  starts the download — no GitHub detour. On every release bump BOTH the
-  displayed version AND these asset URLs (hero button + download card).
+- **Download buttons trigger the download directly** via the stable-named
+  asset `releases/latest/download/Kafkanaut_macOS_aarch64.dmg` — no GitHub
+  detour, and the URL never changes between releases. Every release MUST
+  upload this stable-named copy alongside the versioned DMG (see the
+  release checklist in `../kafkanaut/CLAUDE.md`), otherwise the buttons
+  404. On release, only the displayed version strings on the page change.
   The "all releases" link next to the version points at `/releases`.
 - **Honest install note:** builds are not yet code-signed/notarized → macOS
   "right-click → Open", Windows "More info → Run anyway". Remove once notarized.
 
 ## Publishing a new app version
 
-Binaries are built in the private `kafkanaut` repo (`pnpm tauri build`), then:
-`gh release create vX.Y.Z --repo smike4658/kafkanaut-app <artifacts>`. Then bump
-the version shown on the page. (macOS auto-updater will read these releases once
-Apple Developer ID notarization lands.)
+Binaries are built in the private `kafkanaut` repo (`pnpm tauri build`), then
+published with **both** the versioned DMG and a stable-named copy
+(`Kafkanaut_macOS_aarch64.dmg`) — full commands in the release checklist in
+`../kafkanaut/CLAUDE.md`. Then bump the version shown on the page (the
+download URLs point at `releases/latest/download/` and never change).
+(macOS auto-updater will read these releases once Apple Developer ID
+notarization lands.)
 
 ## Open items
 
