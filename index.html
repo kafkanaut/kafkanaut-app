@@ -321,9 +321,9 @@
         <div class="filter-snippet"><span class="prompt">$ filter&gt;</span> value.amount &gt; 100 &amp;&amp; headers.eventType === 'CREATED'</div>
         <div class="hero-actions">
           <a class="btn btn-primary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">⌘&ensp;Download for macOS</a>
-          <a class="btn btn-secondary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">⊞&ensp;Download for Windows</a>
+          <span class="btn btn-secondary" style="opacity: 0.55; cursor: default;">⊞&ensp;Windows — coming soon</span>
         </div>
-        <div class="hero-meta">v0.48.0 · ~15 MB · free — no account, no telemetry</div>
+        <div class="hero-meta">v0.48.0 · macOS (Apple Silicon) · ~15 MB · free — no account, no telemetry</div>
       </div>
       <div class="hero-shot" data-reveal>
         <div class="hero-frame">
@@ -557,12 +557,12 @@
       <div class="download-buttons">
         <a class="dl-card primary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">
           <span class="dl-title">⌘&ensp;Download for macOS</span>
-          <span class="dl-meta">macOS 12+ · Apple Silicon &amp; Intel · ~15 MB</span>
+          <span class="dl-meta">macOS 12+ · Apple Silicon · ~15 MB</span>
         </a>
-        <a class="dl-card secondary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">
-          <span class="dl-title">⊞&ensp;Download for Windows</span>
-          <span class="dl-meta">Windows 10+ · x64 · ~15 MB</span>
-        </a>
+        <span class="dl-card secondary" style="opacity: 0.55;">
+          <span class="dl-title">⊞&ensp;Windows — coming soon</span>
+          <span class="dl-meta">a Windows build is in the works</span>
+        </span>
       </div>
       <div class="download-latest">Latest release: v0.48.0</div>
       <details class="notes">
@@ -600,8 +600,8 @@
         <p>Reading can't — Kafkanaut reads with <code class="code-mono">assign()</code> only, never joins a consumer group, never commits offsets. Admin operations (reset offsets, delete topics, delete records) do exist — that's the point of a client — but they're explicit actions, and destructive ones require typed confirmation.</p>
       </details>
       <details class="faq-item" data-reveal>
-        <summary>Linux?</summary>
-        <p>macOS and Windows today. A Linux build is on the roadmap.</p>
+        <summary>Windows? Linux?</summary>
+        <p>macOS (Apple Silicon) today. A Windows build is in the works, and Linux is on the roadmap.</p>
       </details>
     </div>
   </section>

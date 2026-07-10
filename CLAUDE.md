@@ -39,8 +39,11 @@ features.** Verify against the app's actual behavior:
   app *does* have full cluster admin (inspect consumer-group lag, reset
   offsets, create/delete topics) — present those as **deliberate, confirmed
   operator actions**, never "it never touches consumer groups".
-- **No telemetry, no account.** Secrets live in the OS keychain. AI is opt-in
-  and can run fully local (Ollama).
+- **No telemetry, no account.** Secrets are stored in a local file readable
+  only by the user's account (0600) — **do NOT claim "OS keychain"**; the
+  keychain dependency was deliberately removed from the implementation (see
+  `../kafkanaut/src-tauri/src/secrets_store.rs`). AI is opt-in and can run
+  fully local (Ollama).
 - **Contact:** `michal.svondr@gmail.com`. No company / Teams / "WAG".
 - **Downloads → `releases/latest`**; keep the displayed version in sync with the
   latest Release.
@@ -56,9 +59,10 @@ Apple Developer ID notarization lands.)
 
 ## Open items
 
-- **Windows `.exe` doesn't exist yet** — the Windows download button currently
-  resolves to the releases page with no installer. Consider a "Windows — coming
-  soon" label until a Windows build ships.
+- **Windows `.exe` doesn't exist yet** — the page shows a disabled
+  "Windows — coming soon" card. Turn it back into a download button once a
+  Windows build ships. (Same for the Intel macOS build: the page currently
+  advertises Apple Silicon only.)
 - Two **screenshot slots** on the page (browse-tail, inspect) await real
   captures of the current teal UI.
 - macOS build **not yet notarized**.
