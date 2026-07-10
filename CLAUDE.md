@@ -45,8 +45,11 @@ features.** Verify against the app's actual behavior:
   `../kafkanaut/src-tauri/src/secrets_store.rs`). AI is opt-in and can run
   fully local (Ollama).
 - **Contact:** `michal.svondr@gmail.com`. No company / Teams / "WAG".
-- **Downloads → `releases/latest`**; keep the displayed version in sync with the
-  latest Release.
+- **Download buttons link the versioned asset directly**
+  (`releases/download/vX.Y.Z/Kafkanaut_X.Y.Z_aarch64.dmg`) so one click
+  starts the download — no GitHub detour. On every release bump BOTH the
+  displayed version AND these asset URLs (hero button + download card).
+  The "all releases" link next to the version points at `/releases`.
 - **Honest install note:** builds are not yet code-signed/notarized → macOS
   "right-click → Open", Windows "More info → Run anyway". Remove once notarized.
 
