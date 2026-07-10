@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kafkanaut — The free Kafka client that can't break prod</title>
-  <meta name="description" content="Kafkanaut is a free desktop Kafka client that reads with assign() only, so browsing and tailing can't disturb your production consumers. No account, no telemetry, secrets in your OS keychain.">
+  <title>Kafkanaut — Free desktop Kafka client. See your data in seconds.</title>
+  <meta name="description" content="Kafkanaut is a free desktop Kafka client for browsing, searching and filtering live data across topics and clusters. Reads with assign() only, so it can't disturb your production consumers. No account, no telemetry — everything stays on your machine.">
   <link rel="icon" href="assets/kafkanaut-icon.png">
 
   <!-- Open Graph / social -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Kafkanaut — The free Kafka client that can't break prod">
-  <meta property="og:description" content="Free desktop Kafka client. Reads with assign() only — no consumer group, no committed offsets. No account, no telemetry, secrets in your OS keychain.">
+  <meta property="og:title" content="Kafkanaut — Free desktop Kafka client. See your data in seconds.">
+  <meta property="og:description" content="Browse, search and filter live Kafka data across topics and clusters. Reads with assign() only — no consumer group, no committed offsets. No account, no telemetry.">
   <meta property="og:image" content="assets/screenshot-live-tail.png">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -218,7 +218,7 @@
 
     /* ─── Comparison ─── */
     .table-wrap { margin-top: 40px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
-    table.compare { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 760px; }
+    table.compare { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 880px; }
     table.compare thead tr { background: var(--panel); }
     table.compare th { text-align: left; padding: 16px 20px; }
     table.compare th.col-blank { color: #6b7280; font-family: var(--font-mono); font-size: 12.5px; font-weight: 500; letter-spacing: 0.05em; }
@@ -316,8 +316,8 @@
     <div class="hero-inner">
       <div class="hero-copy">
         <div class="eyebrow">// FREE · NO ACCOUNT · NO TELEMETRY</div>
-        <h1 class="hero-title">The Kafka client that can't break prod.</h1>
-        <p class="hero-lead">Kafkanaut reads with <code class="code-accent">assign()</code> only — browsing and tailing never joins a consumer group and never commits offsets, so your production consumers' lag and committed offsets stay untouched. Tail 100k+ messages live, decode Avro, replay across clusters. Secrets stay in your OS keychain.</p>
+        <h1 class="hero-title">See what's flowing through your Kafka. In seconds.</h1>
+        <p class="hero-lead">Point Kafkanaut at any cluster and browse, search and filter live data across topics — in parallel tabs, with Avro and Protobuf decoded automatically. And because it reads with <code class="code-accent">assign()</code> only, it never joins a consumer group and never commits offsets — production consumers won't even notice. No account, no telemetry — everything stays on your machine.</p>
         <div class="filter-snippet"><span class="prompt">$ filter&gt;</span> value.amount &gt; 100 &amp;&amp; headers.eventType === 'CREATED'</div>
         <div class="hero-actions">
           <a class="btn btn-primary" href="https://github.com/smike4658/kafkanaut-app/releases/latest">⌘&ensp;Download for macOS</a>
@@ -335,8 +335,8 @@
 
   <!-- ═══ STAT STRIP ═══ -->
   <div class="stats">
-    <div class="stat"><span class="stat-num">40+</span><span class="stat-label">&ensp;features</span></div>
-    <div class="stat"><span class="stat-num">570+</span><span class="stat-label">&ensp;automated tests</span></div>
+    <div class="stat"><span class="stat-num">100k+</span><span class="stat-label">&ensp;messages, tailed live</span></div>
+    <div class="stat"><span class="stat-num">Avro·Proto·JSON</span><span class="stat-label">&ensp;auto-decoded</span></div>
     <div class="stat"><span class="stat-num">0</span><span class="stat-label">&ensp;telemetry</span></div>
     <div class="stat"><span class="stat-num accent">$0</span><span class="stat-label">&ensp;free</span></div>
   </div>
@@ -354,9 +354,9 @@
         <p>Browsing and tailing use partition assignment, never <code class="code-mono">subscribe()</code>. Kafkanaut never joins a consumer group and never commits offsets when reading — no rebalances triggered, your consumers' lag and committed positions stay exactly as they were.</p>
       </div>
       <div class="card" data-reveal>
-        <div class="chip">OS keychain</div>
+        <div class="chip">local-only secrets</div>
         <h3>Secrets never leave your machine</h3>
-        <p>SASL passwords, mTLS certs and OAuth tokens live in macOS Keychain / Windows Credential Manager — never in plaintext config files, never sent anywhere. No telemetry, no phone-home, no account.</p>
+        <p>SASL passwords, mTLS certs and OAuth secrets are stored in a local file readable only by your user account — never synced to any cloud, never sent anywhere. No telemetry, no phone-home, no account.</p>
       </div>
       <div class="card" data-reveal>
         <div class="chip">admin: deliberate only</div>
@@ -373,18 +373,17 @@
     <div class="feature" data-reveal>
       <div class="feature-copy">
         <div class="eyebrow">// BROWSE &amp; TAIL</div>
-        <h2>Tail every topic at once. Filter like a developer.</h2>
-        <p>Merge multiple topics into one live stream across parallel tabs, with virtualized scroll that stays smooth past 100k messages. Start from oldest, latest N, a specific offset, a timestamp, or a date range.</p>
+        <h2>Search across every topic at once. Filter like a developer.</h2>
+        <p>Merge any number of topics into one live stream and search across all of them at once. Virtualized scroll stays smooth past 100k messages. Start from oldest, latest N, a specific offset, a timestamp, or a relative range like <code class="code-mono">-15m</code>.</p>
         <ul class="feature-list">
-          <li><span class="bullet">▸</span><span>JavaScript filter expressions in a Monaco editor, or SQL <code class="code-mono">WHERE</code> syntax</span></li>
-          <li><span class="bullet">▸</span><span>⌘F full-buffer search, header filter chips, saved filters, tab pinning</span></li>
-          <li><span class="bullet">▸</span><span>Consumer-lag visibility while reading — without ever joining the group</span></li>
+          <li><span class="bullet">▸</span><span>Filter in JavaScript or SQL <code class="code-mono">WHERE</code> — or ✨ describe the filter in plain English</span></li>
+          <li><span class="bullet">▸</span><span>⌘F full-buffer search, header filter chips, saved filters &amp; saved topic groups</span></li>
+          <li><span class="bullet">▸</span><span>Parallel sessions in tabs — each with its own topics, filter and buffer; pin them, ⌘⇧T reopens closed ones</span></li>
         </ul>
       </div>
       <div class="shot">
-        <!-- Placeholder: dedicated browse & tail screenshot not provided yet (16:10). Drop assets/screenshot-tail.png here. -->
-        <div class="shot-placeholder">
-          <span class="slot-label">screenshot slot · browse &amp; tail (16:10) · assets/screenshot-tail.png</span>
+        <div class="shot-frame">
+          <img src="assets/screenshot-live-tail.png" alt="Kafkanaut browse and tail — merged multi-topic live stream with a developer filter expression" width="1600" height="1000" loading="lazy">
         </div>
       </div>
     </div>
@@ -418,7 +417,7 @@
         <ul class="feature-list">
           <li><span class="bullet">▸</span><span>Cross-environment replay — capture in one cluster, replay into another, tombstone-faithful</span></li>
           <li><span class="bullet">▸</span><span>Schema-Registry-aware encoding (Avro / JSON Schema wire format)</span></li>
-          <li><span class="bullet">▸</span><span>✨ AI template generator — realistic example messages for any topic</span></li>
+          <li><span class="bullet">▸</span><span>✨ AI message generator — turn any real message into realistic variants, ready for bulk produce</span></li>
         </ul>
       </div>
       <div class="shot">
@@ -443,6 +442,7 @@
           <li><span class="bullet">▸</span><span>Consumer groups: lag tables, lag history graph, reset offsets (with confirmation)</span></li>
           <li><span class="bullet">▸</span><span>Topics: create, alter configs, add partitions, delete records</span></li>
           <li><span class="bullet">▸</span><span>Schema Registry subject/version admin with compatibility management</span></li>
+          <li><span class="bullet">▸</span><span>Connects to anything: SASL/PLAIN, SCRAM, OAuth 2.0, mTLS, custom CA — with a pre-flight connection test</span></li>
         </ul>
       </div>
     </div>
@@ -452,11 +452,11 @@
       <div class="feature-copy">
         <div class="eyebrow">// AI EXTENSION — OPT-IN</div>
         <h2>Ask for a filter in English. Get one in JavaScript.</h2>
-        <p>The AI extension no commercial competitor ships — and it's off by default. Natural language compiles to filter expressions; topics get summarized; the in-app manual answers questions over its own docs.</p>
+        <p>The AI extension no commercial competitor ships — and it's off by default. Describe a filter in plain English and get a validated expression. Generate realistic test messages from a real one. Summarize what's in a topic, or get a plain-English diff between two messages.</p>
         <ul class="feature-list">
-          <li><span class="bullet">▸</span><span>Multi-provider: Azure AI Foundry, OpenAI, Anthropic, or Ollama — fully local</span></li>
-          <li><span class="bullet">▸</span><span>Audit log stores metadata only — never message payloads</span></li>
-          <li><span class="bullet">▸</span><span>Disable it entirely and nothing AI-related ever runs</span></li>
+          <li><span class="bullet">▸</span><span>Five skills: filters from text, message generation for produce, topic summaries, semantic diff, in-app help over the manual</span></li>
+          <li><span class="bullet">▸</span><span>Multi-provider: Azure AI Foundry, OpenAI, Anthropic, or Ollama — fully local, nothing leaves your machine</span></li>
+          <li><span class="bullet">▸</span><span>Audit log stores metadata only — never message payloads. Disable it and nothing AI-related ever runs</span></li>
         </ul>
       </div>
       <div class="shot">
@@ -481,6 +481,7 @@
             <th class="col-kafkanaut">Kafkanaut</th>
             <th class="col-competitor">Kadeck</th>
             <th class="col-competitor">Conduktor</th>
+            <th class="col-competitor">AKHQ</th>
             <th class="col-competitor">Offset Explorer</th>
           </tr>
         </thead>
@@ -490,11 +491,13 @@
             <td class="cell-kafkanaut">Free</td>
             <td class="cell-competitor">Free tier + paid</td>
             <td class="cell-competitor">Paid (free trial)</td>
+            <td class="cell-competitor">Free (self-hosted)</td>
             <td class="cell-competitor">Free eval, paid license</td>
           </tr>
           <tr>
             <td class="cell-label">AI features</td>
             <td class="cell-kafkanaut">✓ opt-in, multi-provider</td>
+            <td class="cell-competitor">✗</td>
             <td class="cell-competitor">✗</td>
             <td class="cell-competitor">✗</td>
             <td class="cell-competitor">✗</td>
@@ -505,12 +508,14 @@
             <td class="cell-competitor">✗</td>
             <td class="cell-competitor">✗</td>
             <td class="cell-competitor">✗</td>
+            <td class="cell-competitor">✗</td>
           </tr>
           <tr>
             <td class="cell-label">Native desktop</td>
             <td class="cell-kafkanaut">✓ Tauri, ~15 MB</td>
             <td class="cell-competitor">Electron</td>
             <td class="cell-competitor">Web console</td>
+            <td class="cell-competitor">Web app you deploy</td>
             <td class="cell-competitor">Java desktop</td>
           </tr>
           <tr>
@@ -518,6 +523,7 @@
             <td class="cell-kafkanaut">✓ free</td>
             <td class="cell-competitor">paid tier</td>
             <td class="cell-competitor">paid tier</td>
+            <td class="cell-competitor">✓</td>
             <td class="cell-competitor">view only</td>
           </tr>
           <tr>
@@ -525,6 +531,7 @@
             <td class="cell-kafkanaut">✓ free</td>
             <td class="cell-competitor">paid tier</td>
             <td class="cell-competitor">paid tier</td>
+            <td class="cell-competitor">Connect only</td>
             <td class="cell-competitor">✗</td>
           </tr>
           <tr>
@@ -532,6 +539,7 @@
             <td class="cell-kafkanaut">✓</td>
             <td class="cell-competitor">account required</td>
             <td class="cell-competitor">account required</td>
+            <td class="cell-competitor">✓</td>
             <td class="cell-competitor">✓</td>
           </tr>
         </tbody>
@@ -572,16 +580,20 @@
   <section id="faq" class="section faq">
     <div data-reveal>
       <div class="eyebrow">// FAQ</div>
-      <h2 class="section-title" style="font-size: clamp(28px, 3vw, 38px);">Questions ops people actually ask</h2>
+      <h2 class="section-title" style="font-size: clamp(28px, 3vw, 38px);">Questions people actually ask</h2>
     </div>
     <div class="faq-list">
+      <details class="faq-item" data-reveal>
+        <summary>Do I need to be a Kafka expert?</summary>
+        <p>No. Add a connection, pick your topics, and you're reading live data. Filters are plain JavaScript or SQL <code class="code-mono">WHERE</code> — or just describe what you're looking for in English and let the AI write the filter for you.</p>
+      </details>
       <details class="faq-item" data-reveal>
         <summary>Is it really free?</summary>
         <p>Yes. Free to download and use — no tiers, no seat pricing, no account, no "community edition" with the good parts removed.</p>
       </details>
       <details class="faq-item" data-reveal>
         <summary>Does it send my data anywhere?</summary>
-        <p>No. Zero telemetry, no account, no phone-home. Credentials stay in your OS keychain. The AI extension is opt-in, and you can point it at a local Ollama instance so nothing ever leaves your machine — its audit log stores metadata only, never payloads.</p>
+        <p>No. Zero telemetry, no account, no phone-home. Credentials are stored locally on your machine and never sent anywhere. The AI extension is opt-in, and you can point it at a local Ollama instance so nothing ever leaves your machine — its audit log stores metadata only, never payloads.</p>
       </details>
       <details class="faq-item" data-reveal>
         <summary>Can it break production?</summary>
