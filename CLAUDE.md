@@ -12,9 +12,12 @@ contains **no application source** — that lives privately elsewhere (see below
 - **`assets/`** — screenshots, `kafkanaut-icon.png`, `fonts.css` + `fonts/`.
 - **Live site:** https://kafkanaut.github.io/kafkanaut-app/ (Pages, main/root,
   HTTPS). Edit `index.html`/`assets`, commit, **push → Pages auto-rebuilds**.
-- **Downloads:** GitHub Releases of this repo. Buttons on the page point at
-  `.../releases/latest`. Current release **v0.48.0** = macOS
-  `Kafkanaut_0.48.0_aarch64.dmg` (unsigned). No Windows `.exe` yet.
+- **Downloads:** GitHub Releases of this repo. Buttons point at
+  `releases/latest/download/Kafkanaut_macOS_universal.dmg` (stable name).
+  Current release **v0.48.0** = macOS universal (Apple Silicon + Intel,
+  ~19 MB, unsigned); legacy aarch64-only DMGs also attached. No Windows
+  `.exe` yet. Homebrew: `brew install --cask kafkanaut/tap/kafkanaut`
+  (tap repo `kafkanaut/homebrew-tap`; bump version + sha256 per release).
 
 ## Verifying the copy against the real app (do this before changing claims)
 
@@ -46,7 +49,7 @@ features.** Verify against the app's actual behavior:
   fully local (Ollama).
 - **Contact:** `michal.svondr@gmail.com`. No company / Teams / "WAG".
 - **Download buttons trigger the download directly** via the stable-named
-  asset `releases/latest/download/Kafkanaut_macOS_aarch64.dmg` — no GitHub
+  asset `releases/latest/download/Kafkanaut_macOS_universal.dmg` — no GitHub
   detour, and the URL never changes between releases. Every release MUST
   upload this stable-named copy alongside the versioned DMG (see the
   release checklist in `../kafkanaut/CLAUDE.md`), otherwise the buttons
@@ -69,8 +72,8 @@ notarization lands.)
 
 - **Windows `.exe` doesn't exist yet** — the page shows a disabled
   "Windows — coming soon" card. Turn it back into a download button once a
-  Windows build ships. (Same for the Intel macOS build: the page currently
-  advertises Apple Silicon only.)
+  Windows build ships. (Intel macOS: resolved — v0.48.0 ships a universal
+  DMG and the page advertises Apple Silicon & Intel.)
 - Two **screenshot slots** on the page (browse-tail, inspect) await real
   captures of the current teal UI.
 - macOS build **not yet notarized**.
