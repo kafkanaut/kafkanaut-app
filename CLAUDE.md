@@ -80,6 +80,17 @@ notarization lands.)
 - Custom domain `kafkanaut.app` can be attached to Pages via a `CNAME` file +
   DNS later (matches the app's `dev.kafkanaut.app` identifier).
 
+## Layout contract (agreed 2026-07-11 — do not break silently)
+
+The maintainer signed off on the current above-the-fold composition. It is
+ENFORCED by `tests/layout-contract.mjs` (runs in CI, `.github/workflows/layout.yml`):
+no horizontal scroll at any width; `.hero-meta` and every `.stat` cell stay
+single-line at 1440+; the stat strip ends within the first 1920×1080 screen.
+**Any copy change that lengthens hero-meta / stat labels can wrap and push the
+fold — check the contract locally (or let CI catch it) BEFORE pushing.** If a
+layout change is intentional, agree with the maintainer first and update the
+contract's numbers in the same commit.
+
 ## Don't
 
 - Don't add external CDN/script/font references — the page must stay
