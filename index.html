@@ -350,7 +350,7 @@
   <!-- ═══ STAT STRIP ═══ -->
   <div class="stats">
     <div class="stat"><span class="stat-num">50k</span><span class="stat-label">&ensp;message live buffer</span></div>
-    <div class="stat"><span class="stat-num">Avro·Proto·JSON</span><span class="stat-label">&ensp;auto-decoded</span></div>
+    <div class="stat"><span class="stat-num">Avro·Protobuf</span><span class="stat-label">&ensp;auto-decoded via Schema Registry</span></div>
     <div class="stat"><span class="stat-num">0</span><span class="stat-label">&ensp;telemetry</span></div>
     <div class="stat"><span class="stat-num accent">$0</span><span class="stat-label">&ensp;free</span></div>
   </div>
@@ -412,10 +412,10 @@
       <div class="feature-copy">
         <div class="eyebrow">// INSPECT</div>
         <h2>Every byte, decoded — JSON tree to hex.</h2>
-        <p>Schema Registry auto-decode handles Avro, Protobuf and JSON Schema in Confluent wire format. Flip between JSON tree, raw, hex and headers on any message.</p>
+        <p>Schema Registry auto-decode handles Avro and Protobuf in Confluent wire format — plain JSON needs no decoding at all. Flip between JSON tree, raw, hex and headers on any message.</p>
         <ul class="feature-list">
-          <li><span class="bullet">▸</span><span>Text diff with the previous message, plus AI semantic diff in plain English</span></li>
-          <li><span class="bullet">▸</span><span>PII masking at the display layer — <code class="code-mono">*card*</code>, <code class="code-mono">iban</code>, <code class="code-mono">email</code> patterns</span></li>
+          <li><span class="bullet">▸</span><span>Text diff with the previous message in the buffer</span></li>
+          <li><span class="bullet">▸</span><span>PII masking at the display layer — your field-name patterns, e.g. <code class="code-mono">*card*</code>, <code class="code-mono">iban</code>, <code class="code-mono">email</code></span></li>
           <li><span class="bullet">▸</span><span>Copy as cURL, export to JSON / NDJSON / CSV</span></li>
         </ul>
       </div>
@@ -465,9 +465,9 @@
       <div class="feature-copy">
         <div class="eyebrow">// AI EXTENSION — OPT-IN</div>
         <h2>Ask for a filter in English. Get one in JavaScript.</h2>
-        <p>The AI extension no commercial competitor ships — and it's off by default. Describe a filter in plain English and get a validated expression. Generate realistic test messages from a real one. Summarize what's in a topic, or get a plain-English diff between two messages.</p>
+        <p>The AI extension no commercial competitor ships — and it's off by default. Describe a filter in plain English and get a validated expression. Generate realistic test messages from a real one, or summarize what's flowing through a topic.</p>
         <ul class="feature-list">
-          <li><span class="bullet">▸</span><span>Five skills: filters from text, message generation for produce, topic summaries, semantic diff, in-app help over the manual</span></li>
+          <li><span class="bullet">▸</span><span>Four skills: filters from text, message generation for produce, topic summaries, in-app help over the manual</span></li>
           <li><span class="bullet">▸</span><span>Multi-provider: Azure AI Foundry, OpenAI, Anthropic, or Ollama — fully local, nothing leaves your machine</span></li>
           <li><span class="bullet">▸</span><span>Audit log stores metadata only — never message payloads. Disable it and nothing AI-related ever runs</span></li>
         </ul>
