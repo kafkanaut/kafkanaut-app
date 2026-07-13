@@ -60,7 +60,11 @@ for (const width of [1440, 1920, 2560]) {
   }
 }
 
-// ── Invariant 5: stat strip above the fold on real laptop/monitor viewports ──
+// ── Invariant 5: stat strip sits FLUSH at the bottom of the first screen ──
+// The fold (nav + hero + stat strip) fills exactly one viewport, so the strip's
+// bottom edge lands on the viewport bottom: no dead gap below it on short laptop
+// windows, and no overflow past the fold on tall ones. 2px tolerance for
+// sub-pixel rounding of 100svh.
 for (const [width, height] of [[1440, 820], [1512, 820], [1710, 860], [1920, 1000]]) {
   await page.setViewportSize({ width, height });
   await page.goto(page_url);
@@ -68,8 +72,9 @@ for (const [width, height] of [[1440, 820], [1512, 820], [1710, 860], [1920, 100
     () => document.querySelector(".stats")?.getBoundingClientRect().bottom ?? -1,
   );
   check(
-    statsBottom > 0 && statsBottom <= height,
-    `stat strip below the fold at ${width}×${height} (bottom=${Math.round(statsBottom)}px)`,
+    statsBottom > 0 && Math.abs(statsBottom - height) <= 2,
+    `stat strip not flush with the fold bottom at ${width}×${height} ` +
+      `(bottom=${Math.round(statsBottom)}px, expected ~${height}px)`,
   );
 }
 

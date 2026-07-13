@@ -110,7 +110,12 @@
     .code-mono { font-family: var(--font-mono); font-size: 13.5px; }
 
     /* ─── Hero ─── */
-    .hero { position: relative; }
+    /* The fold = nav + hero + stat strip, pinned to fill exactly one screen so
+       the strip sits flush at the bottom of the first viewport (no dead gap on
+       short laptop windows, no overflow on tall ones). Enforced by
+       tests/layout-contract.mjs. */
+    .fold { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; }
+    .hero { position: relative; flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; }
     .hero-grid {
       position: absolute; inset: 0; pointer-events: none;
       background-image:
@@ -308,6 +313,9 @@
 </head>
 <body>
 
+  <!-- ═══ FIRST SCREEN (nav + hero + stat strip, pinned to one viewport) ═══ -->
+  <div class="fold">
+
   <!-- ═══ NAV ═══ -->
   <header class="nav">
     <a class="nav-brand" href="#top" aria-label="Kafkanaut home">
@@ -355,6 +363,8 @@
     <div class="stat"><span class="stat-num">0</span><span class="stat-label">&ensp;telemetry</span></div>
     <div class="stat"><span class="stat-num accent">$0</span><span class="stat-label">&ensp;free</span></div>
   </div>
+
+  </div><!-- /.fold -->
 
   <!-- ═══ SAFETY ═══ -->
   <section id="safety" class="section">
