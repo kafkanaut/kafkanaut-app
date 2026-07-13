@@ -85,7 +85,8 @@
       border: 1px solid var(--accent-border); padding: 2px 8px; border-radius: 5px;
     }
     .nav-links {
-      display: flex; align-items: center; gap: clamp(14px, 2.5vw, 28px);
+      display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
+      gap: 10px clamp(14px, 2.5vw, 28px);
       font-family: var(--font-mono); font-size: 13.5px; color: var(--muted);
     }
     .nav-cta {
@@ -123,7 +124,7 @@
     }
     .hero-inner {
       position: relative; display: flex; flex-wrap: wrap; gap: 56px; align-items: center;
-      padding: clamp(56px, 8vw, 96px) 0 clamp(56px, 8vw, 96px) clamp(20px, 4vw, 48px);
+      padding: clamp(36px, 4.5vh, 80px) 0 clamp(30px, 3.8vh, 68px) clamp(20px, 4vw, 48px);
     }
     .hero-copy {
       flex: 1 1 480px; min-width: min(480px, 100%); max-width: 620px;
@@ -131,17 +132,17 @@
     }
     .hero-title {
       font-family: var(--font-display); font-size: clamp(40px, 5vw, 62px); font-weight: 700;
-      letter-spacing: -0.03em; line-height: 1.06; color: #f2f4f8; margin-top: 20px;
+      letter-spacing: -0.03em; line-height: 1.06; color: #f2f4f8; margin-top: 14px;
     }
-    .hero-lead { font-size: 18px; line-height: 1.65; color: #98a0ac; margin-top: 22px; }
+    .hero-lead { font-size: 18px; line-height: 1.65; color: #98a0ac; margin-top: 16px; }
     .filter-snippet {
       font-family: var(--font-mono); font-size: 14px; color: #7ee3a1;
       background: var(--panel); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px;
-      padding: 14px 18px; margin-top: 26px; max-width: 100%; overflow-x: auto; white-space: nowrap;
+      padding: 14px 18px; margin-top: 20px; max-width: 100%; overflow-x: auto; white-space: nowrap;
     }
     .filter-snippet .prompt { color: #5b6472; }
-    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
-    .hero-meta { font-family: var(--font-mono); font-size: 13px; color: #626b78; margin-top: 16px; }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .hero-meta { font-family: var(--font-mono); font-size: 13px; color: #626b78; margin-top: 12px; }
     .hero-shot { flex: 1 1 600px; min-width: min(600px, 100%); }
     .hero-frame {
       border: 1px solid rgba(255,255,255,0.08); border-right: none;

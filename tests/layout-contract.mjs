@@ -60,6 +60,19 @@ for (const width of [1440, 1920, 2560]) {
   }
 }
 
+// ── Invariant 5: stat strip above the fold on real laptop/monitor viewports ──
+for (const [width, height] of [[1440, 820], [1512, 820], [1710, 860], [1920, 1000]]) {
+  await page.setViewportSize({ width, height });
+  await page.goto(page_url);
+  const statsBottom = await page.evaluate(
+    () => document.querySelector(".stats")?.getBoundingClientRect().bottom ?? -1,
+  );
+  check(
+    statsBottom > 0 && statsBottom <= height,
+    `stat strip below the fold at ${width}×${height} (bottom=${Math.round(statsBottom)}px)`,
+  );
+}
+
 await browser.close();
 
 if (failures.length) {
