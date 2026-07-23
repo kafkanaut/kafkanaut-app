@@ -65,7 +65,12 @@ for (const width of [1440, 1920, 2560]) {
 // bottom edge lands on the viewport bottom: no dead gap below it on short laptop
 // windows, and no overflow past the fold on tall ones. 2px tolerance for
 // sub-pixel rounding of 100svh.
-for (const [width, height] of [[1440, 820], [1512, 820], [1710, 860], [1920, 1000]]) {
+// Matrix covers short laptop windows, wide-but-short windows (browser chrome
+// eating height — the 2026-07-23 bug), and tall monitors.
+for (const [width, height] of [
+  [1280, 690], [1440, 820], [1512, 820], [1710, 860],
+  [1920, 940], [1920, 1000], [1993, 1080], [2560, 1310],
+]) {
   await page.setViewportSize({ width, height });
   await page.goto(page_url);
   const statsBottom = await page.evaluate(

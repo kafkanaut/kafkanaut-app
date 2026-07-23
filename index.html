@@ -152,9 +152,28 @@
     .hero-frame {
       border: 1px solid rgba(255,255,255,0.08); border-right: none;
       border-radius: 12px 0 0 12px; overflow: hidden; aspect-ratio: 16 / 10;
+      /* The frame's natural height follows its width (16/10), which says nothing
+         about the viewport. Cap it by the height actually available inside the
+         fold (viewport − nav − stat strip − hero paddings) so wide-but-short
+         windows don't push the stat strip below the fold; object-fit: cover
+         center-crops the screenshot instead. 340px floor keeps it legible. */
+      max-height: max(340px, calc(91.5vh - 140px));
+      max-height: max(340px, calc(91.5svh - 140px));
       box-shadow: -18px 24px 70px rgba(0,0,0,0.55), 0 0 60px var(--accent-glow);
     }
     .hero-frame img, .shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    /* Short windows (small laptop + browser chrome eating height): tighten the
+       hero's vertical rhythm so the copy column also fits one screen. Kicks in
+       well below the smallest size the layout contract pins (820px). */
+    @media (max-height: 750px) {
+      .hero-inner { padding-top: 24px; padding-bottom: 22px; }
+      .hero-title { font-size: clamp(32px, 4.8vw, 44px); }
+      .hero-lead { font-size: 15.5px; line-height: 1.55; margin-top: 12px; }
+      .filter-snippet { margin-top: 14px; padding: 10px 14px; }
+      .hero-actions { margin-top: 16px; }
+      .hero-meta { margin-top: 10px; }
+    }
 
     /* Ultra-wide only (2040px+): cap the hero so the screenshot stops
        growing unbounded. Up to 2040px (laptops, 1080p/1440p monitors) the
