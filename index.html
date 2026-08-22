@@ -340,7 +340,7 @@
     <a class="nav-brand" href="#top" aria-label="Kafkanaut home">
       <img src="assets/kafkanaut-icon.png" alt="Kafkanaut">
       <span class="brand-name">kafkanaut</span>
-      <span class="brand-badge">v0.52.0</span>
+      <span class="brand-badge">v0.53.0</span>
     </a>
     <nav class="nav-links">
       <a href="#features">/features</a>
@@ -365,7 +365,7 @@
           <a class="btn btn-primary" href="https://github.com/kafkanaut/kafkanaut-app/releases/latest/download/Kafkanaut_macOS_universal.dmg">⌘&ensp;Download for macOS</a>
           <a class="btn btn-secondary" href="https://github.com/kafkanaut/kafkanaut-app/releases/latest/download/Kafkanaut_windows_x64.msi">⊞&ensp;Download for Windows</a>
         </div>
-        <div class="hero-meta">v0.52.0 · macOS universal · Windows x64 · ~13–25 MB</div>
+        <div class="hero-meta">v0.53.0 · macOS universal · Windows x64 · ~13–25 MB</div>
       </div>
       <div class="hero-shot" data-reveal>
         <div class="hero-frame">
@@ -422,6 +422,8 @@
         <ul class="feature-list">
           <li><span class="bullet">▸</span><span>Filter in JavaScript or SQL <code class="code-mono">WHERE</code> — or ✨ describe the filter in plain English</span></li>
           <li><span class="bullet">▸</span><span>⌘F full-buffer search, header filter chips, saved filters &amp; saved topic groups</span></li>
+          <li><span class="bullet">▸</span><span>Project any payload field into its own column — <code class="code-mono">value.payload.cardId</code> — by ⌥-clicking it in the JSON tree</span></li>
+          <li><span class="bullet">▸</span><span>Star the messages that matter: they survive filter changes <em>and</em> buffer eviction, and export as their own set</span></li>
           <li><span class="bullet">▸</span><span>Parallel sessions in tabs — each with its own topics, filter and buffer; pin them, ⌘⇧T reopens closed ones</span></li>
         </ul>
       </div>
@@ -444,9 +446,9 @@
         <h2>Every byte, decoded — JSON tree to hex.</h2>
         <p>Schema Registry auto-decode handles Avro and Protobuf in Confluent wire format — plain JSON needs no decoding at all. Flip between JSON tree, raw, hex and headers on any message.</p>
         <ul class="feature-list">
-          <li><span class="bullet">▸</span><span>Text diff with the previous message in the buffer</span></li>
+          <li><span class="bullet">▸</span><span>Diff any two messages you pick — with volatile fields like <code class="code-mono">traceId</code> ignored, so only the real change shows</span></li>
           <li><span class="bullet">▸</span><span>PII masking at the display layer — your field-name patterns, e.g. <code class="code-mono">*card*</code>, <code class="code-mono">iban</code>, <code class="code-mono">email</code></span></li>
-          <li><span class="bullet">▸</span><span>Copy as cURL, export to JSON / NDJSON / CSV</span></li>
+          <li><span class="bullet">▸</span><span>Copy as cURL; export to JSON / NDJSON / CSV — to a file or the clipboard, stamped with profile, filter and scope for the ticket</span></li>
         </ul>
       </div>
     </div>
@@ -607,7 +609,7 @@
           <span class="dl-meta">Windows 10/11 · x64 · .msi · ~13 MB</span>
         </a>
       </div>
-      <div class="download-latest">Latest release: v0.52.0 · <a href="https://github.com/kafkanaut/kafkanaut-app/releases" style="text-decoration: underline;">all releases</a></div>
+      <div class="download-latest">Latest release: v0.53.0 · <a href="https://github.com/kafkanaut/kafkanaut-app/releases" style="text-decoration: underline;">all releases</a></div>
       <div class="download-latest" style="margin-top: 8px;">or <code class="code-mono" style="color: #a8b0bc;">brew install --cask kafkanaut/tap/kafkanaut</code></div>
       <details class="notes">
         <summary><span class="info">ⓘ</span> Builds are not yet code-signed — how to open them</summary>
